@@ -1,8 +1,10 @@
-interface Mappble {
+export interface Mappable {
   location: {
     lat: number;
     lng: number;
-  }
+  };
+  markerContent(): string;
+  color: string;
 }
 
 export class CustomMap {
@@ -18,13 +20,20 @@ export class CustomMap {
     });
   }
 
-  addMarker(mappable: Mappble): void {
-    new google.maps.Marker({
+  addMarker(mappable: Mappable): void {
+    const marker = new google.maps.Marker({
       map: this.googleMap,
       position: {
         lat: mappable.location.lat,
         lng: mappable.location.lng
       }
+    });
+
+    marker.addListener("click", () => {
+      const infoWindow = new google.maps.InfoWindow({
+        content: mappable.markerContent()
+      });
+      infoWindow.open(this.googleMap, marker);
     });
   }
 }
